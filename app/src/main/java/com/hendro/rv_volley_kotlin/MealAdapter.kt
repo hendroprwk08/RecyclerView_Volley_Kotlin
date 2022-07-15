@@ -3,6 +3,7 @@ package com.hendro.rv_volley_kotlin
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.hendro.rv_volley_kotlin.databinding.RowItemLayoutBinding
@@ -28,8 +29,11 @@ class MealAdapter (private var mealList: List<Meal>) :
             .load(mealList[position].getImage())
             .into(holder.binding.imgMeal)
 
-        holder.itemView.setOnClickListener(){
-
+        holder.itemView.setOnClickListener{
+            val i = Intent(holder.itemView.context, DetailActivity::class.java)
+            i.putExtra("i_idMeal", mealList[position].getId())
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            holder.itemView.context.startActivity(i)
         }
 
     }
