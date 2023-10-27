@@ -25,6 +25,16 @@ class DetailActivity : AppCompatActivity() {
         val id = i.getStringExtra("i_idMeal")
 
         load(id)
+
+        //back button
+        val actionbar = supportActionBar
+        actionbar!!.setDisplayHomeAsUpEnabled(true)
+        actionbar!!.setDisplayHomeAsUpEnabled(true)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
     private fun load(id: String?) {

@@ -1,11 +1,13 @@
 package com.hendro.rv_volley_kotlin
 
 import android.os.Bundle
-import android.util.Log
+import android.os.Handler
+import android.os.Looper
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
@@ -25,11 +27,26 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
 
         setRV()
+
+        binding.swipeContainer.setOnRefreshListener(OnRefreshListener {
+            getData()
+
+            Handler(Looper.getMainLooper()).postDelayed(
+                { binding.swipeContainer.setRefreshing(false) },
+                3000
+            ) // Delay in millis
+        })
+
+        // Configure the refreshing colors
+        binding.swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+            android.R.color.holo_green_light,
+            android.R.color.holo_orange_light,
+            android.R.color.holo_red_light);
     }
 
     public fun setRV(){
         mealAdapter = MealAdapter(mealList)
-        val layoutManager = LinearLayoutManager(applicationContext)
+        val layoutManager = GridLayoutManager(applicationContext, 2)
         binding.rv.layoutManager = layoutManager
         binding.rv.itemAnimator = DefaultItemAnimator()
         binding.rv.adapter = mealAdapter
@@ -44,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         // Request a string response from the provided URL.
         val stringRequest = StringRequest(
             Request.Method.GET, url,
-            Response.Listener<String> { response ->
+            { response ->
                 val jsonObject = JSONObject(response)
                 val jsonArray = jsonObject.optJSONArray("meals")
                 var id: String
@@ -62,7 +79,7 @@ class MainActivity : AppCompatActivity() {
 
                 mealAdapter.notifyDataSetChanged()
             },
-            Response.ErrorListener {
+            {
                 Toast.makeText(this@MainActivity, "Koneksi: Gagal terhubung", Toast.LENGTH_SHORT).show()
             })
 
